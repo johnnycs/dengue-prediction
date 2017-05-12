@@ -3,3 +3,6 @@
 *.zip
 *.csv
 *.ipynb_checkpoints
+/Dengue49-59
+/gis
+/met18000
