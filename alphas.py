@@ -26,7 +26,7 @@ def get_alphas(LAG, train, week_forward = 16):
         return np.sum(all_penalties) / float(len(all_penalties))
 
     seasonality_starters = [0.75,20] # [constant,phase]
-    arr = np.array([0.]*W_CASE) #  27 betas
+    arr = np.array([0.05]*W_CASE) #  27 betas
     arr = np.append(arr,seasonality_starters) # 29 betas
     w = minimize(cost,arr)
     return w
