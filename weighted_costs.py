@@ -6,6 +6,7 @@ print "getting cost from nweek ahead"
 def nweek_ahead_cost(ws, week_forward ,start_week, end_week, data, cases_for_pred):
     
 #     print end_week
+    weight = np.linspace(1,2,week_forward)
     ret = 0
     for aweek in range(week_forward): # 14 loops; when you want to predict 14 weeks ahead
         week_to_predict = aweek+end_week
@@ -19,13 +20,12 @@ def nweek_ahead_cost(ws, week_forward ,start_week, end_week, data, cases_for_pre
           ws, 
           week_to_predict, 
           cases_for_pred)
-        cases_for_pred = np.append(cases_for_pred[1:],predicted_case)
+
+        cur_weight = weight[aweek]
+        weighted_predicted_case = cur_weight * predicted_case
+        cases_for_pred = np.append(cases_for_pred[1:],weighted_predicted_case)
         sigma_sq = real_case + 1
-
-        # only penalizing the last predicting term
-        if aweek == week_forward - 1:
-          ret += ((real_case - predicted_case)**2)/float(sigma_sq)
-
+        ret += ((real_case - weighted_predicted_case)**2)/float(sigma_sq)
     return ret
     
 # data = range(1,100)
