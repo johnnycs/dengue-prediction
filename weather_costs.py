@@ -9,7 +9,8 @@ def nweek_ahead_cost(ws, week_forward ,start_week, end_week, data, cases_for_pre
     ret = 0
     for aweek in range(week_forward): # 14 loops; when you want to predict 14 weeks ahead
         week_to_predict = aweek+end_week
-        real_case = data[aweek+end_week] +1 # avoid getting zeros
+        real_case = data.cases[aweek+end_week] +1 # avoid getting zeros
+        mean_temp = data.meantemp[end_week]
 #         print 'wtp',week_to_predict
 #         print cases_for_pred
 #         print cases_for_pred
@@ -18,10 +19,15 @@ def nweek_ahead_cost(ws, week_forward ,start_week, end_week, data, cases_for_pre
         predicted_case = model.guess(
           ws, 
           week_to_predict, 
-          cases_for_pred)
+          cases_for_pred,
+          mean_temp)
+
         cases_for_pred = np.append(cases_for_pred[1:],predicted_case)
         sigma_sq = real_case + 1
-        ret += ((real_case - predicted_case)**2)/float(sigma_sq)
+        
+        if aweek == week_forward - 1:
+          ret += ((real_case - predicted_case)**2)/float(sigma_sq)
+
     return ret
     
 # data = range(1,100)

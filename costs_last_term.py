@@ -21,7 +21,11 @@ def nweek_ahead_cost(ws, week_forward ,start_week, end_week, data, cases_for_pre
           cases_for_pred)
         cases_for_pred = np.append(cases_for_pred[1:],predicted_case)
         sigma_sq = real_case + 1
-        ret += ((real_case - predicted_case)**2)/float(sigma_sq)
+
+        # only penalizing the last predicting term
+        if aweek == week_forward - 1:
+          ret += ((real_case - predicted_case)**2)/float(sigma_sq)
+
     return ret
     
 # data = range(1,100)
