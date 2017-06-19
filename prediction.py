@@ -1,7 +1,7 @@
 import numpy as np
 import model
 
-def get_predictions(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, real, ws, nweeks_to_predict=[1,2,4,8,16]):
+def get_predictions(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, real, ws, province = "", nweeks_to_predict=[1,2,4,8,16]):
 
     def n_week_ahead(cases_for_prediction, temps_for_prediction, rains_for_prediction,
                      weeks_ahead, case_week_to_predict):
