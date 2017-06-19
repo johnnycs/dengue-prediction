@@ -1,3 +1,5 @@
+import numpy as np
+
 def ws_helper(LAG, ws):
     n_ws = len(ws)
     if LAG == n_ws:
