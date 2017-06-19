@@ -70,7 +70,10 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, train, ws_csv = [], week_forw
         print 'ws_csv'
         # take the csv of ws that has been computed to use
         prev_ws = ws_csv.ws_helper(LAG, ws_csv)
-        w = minimize(cost, prev_ws, bounds = bnds, options={'ftol' : myfactr * np.finfo(float).eps})
+        prev_ws_season = np.append(prev_ws,seasonality_starters)
+        prev_ws_temp = np.append(prev_ws_season,temperature_starters)
+        all_prev_ws = np.append(prev_ws_temp,rain_starters)
+        w = minimize(cost, all_prev_ws, bounds = bnds, options={'ftol' : myfactr * np.finfo(float).eps})
 
     return w
 
