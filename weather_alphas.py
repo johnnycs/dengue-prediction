@@ -43,7 +43,8 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, train, ws_csv = [], week_forw
 
         return np.sum(all_penalties) / float(len(all_penalties))
 
-    head_arr = np.array([0.05]*W_CASE)
+    mean_val = 1/float(LAG)
+    head_arr = np.array([mean_val]*W_CASE)
     seasonality_starters = [0.75,20] # [constant,phase]
     temperature_starters = [0.]*(W_TEMP)
     rain_starters = [0.05]*(W_RAIN) # don't start at 0 for rain
