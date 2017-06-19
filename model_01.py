@@ -64,4 +64,5 @@ def guess(all_ws, nth_week, cases_for_prediction, temps_for_prediction, rains_fo
     rain_part = rain_term(w_rain, rains_for_prediction)
     # humidity_part = humidity_term(w, humidity)
 
+        # AR * (S + (T*R)) => AR*S + AR(T * R)
     return (omega * seasonality_part) + (temperature_part * rain_part)
