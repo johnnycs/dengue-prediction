@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.optimize import fmin, minimize
-import weather_costs
+import weather_costs, ws_csv
 
 print 'getting bounded alphas ...'
 
@@ -68,7 +68,9 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, train, ws_csv = [], week_forw
 
     elif len(ws_csv) > 1:
         print 'ws_csv'
-        w = minimize(cost, ws_csv, bounds = bnds, options={'ftol' : myfactr * np.finfo(float).eps})
+        # take the csv of ws that has been computed to use
+        prev_ws = ws_csv.ws_helper(LAG, ws_csv)
+        w = minimize(cost, prev_ws, bounds = bnds, options={'ftol' : myfactr * np.finfo(float).eps})
 
     return w
 
