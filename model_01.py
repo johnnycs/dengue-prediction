@@ -1,6 +1,6 @@
 import numpy as np
 
-print "running model"
+print "running model of omega multiplying weather and season"
 
 def guess(all_ws, nth_week, cases_for_prediction, temps_for_prediction, rains_for_prediction):
 
@@ -33,6 +33,7 @@ def guess(all_ws, nth_week, cases_for_prediction, temps_for_prediction, rains_fo
         # print "len temps_for_prediction",len(temps_for_prediction)
         pad_y = np.concatenate(([1], np.array(temps_for_prediction)))
         weights = np.array(w_temp)
+        # positive_weights = weights**2
         all_temps = np.dot(weights,pad_y)
         return all_temps
 
@@ -65,4 +66,4 @@ def guess(all_ws, nth_week, cases_for_prediction, temps_for_prediction, rains_fo
     # humidity_part = humidity_term(w, humidity)
 
         # AR * (S + (T*R)) => AR*S + AR(T * R)
-    return (omega * seasonality_part) + (temperature_part * rain_part)
+    return (omega * (seasonality_part + temperature_part + rain_part))
