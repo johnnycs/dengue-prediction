@@ -7,7 +7,7 @@ print 'getting bounded alphas ...'
 # train comes in the form of dataframe
 def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, train, ws_csv = [], week_forward = 16):
     W_CASE = LAG + 1
-    # W_SEASON = 2
+    W_SEASON = 2
     W_TEMP = TEMPERATURE_WEEKS + 1
     W_RAIN = RAIN_WEEKS + 1
     W_WEATHER = W_TEMP + W_RAIN
@@ -46,7 +46,7 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, train, ws_csv = [], week_forw
     mean_val = 1/float(LAG)
     head_arr = np.array([mean_val]*W_CASE)
     seasonality_starters = [0.75,20] # [constant,phase]
-    temperature_starters = [0.]*(W_TEMP)
+    temperature_starters = [0.1]*(W_TEMP)
     rain_starters = [0.05]*(W_RAIN) # don't start at 0 for rain
 
     arr = np.append(head_arr,seasonality_starters) #  lag + 1 + 2 betas
@@ -58,7 +58,8 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, train, ws_csv = [], week_forw
     tail_bnds = [(None,None),(1.,None)]
     bnds.extend(tail_bnds)
     [bnds.extend([(None,None)]) for i in range(W_WEATHER)]
-    print 'bnds', len(bnds)
+    print "LAG", LAG
+    print 'bnds',LAG, len(bnds)
 
     myfactr = 1e2
     if len(ws_csv) < 1:
@@ -69,11 +70,15 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, train, ws_csv = [], week_forw
     elif len(ws_csv) > 1:
         print 'ws_csv'
         # take the csv of ws that has been computed to use
-        prev_ws = ws_from_csv.ws_helper(LAG+1, ws_csv)
-        prev_ws_season = np.append(prev_ws,seasonality_starters)
-        prev_ws_temp = np.append(prev_ws_season,temperature_starters)
-        all_prev_ws = np.append(prev_ws_temp,rain_starters)
-        print 'prev_ws',len(all_prev_ws)
+        prev_ws = ws_from_csv.ws_helper(W_CASE+W_SEASON+W_TEMP, ws_csv)
+        # print 'prev_ws', len(prev_ws)
+        # prev_ws_season = np.append(prev_ws,seasonality_starters)
+        # print 'prev_ws_season', len(prev_ws_season)
+        # temp_params = ws_csv[W_CASE+W_SEASON:W_CASE+W_SEASON+TEMPERATURE_WEEKS] 
+        # prev_ws_temp = np.append(prev_ws_season,temp_params)
+        print 'prev_ws',len(prev_ws)
+        all_prev_ws = np.append(prev_ws,rain_starters)
+        print 'all_prev_ws',len(all_prev_ws)
 	w = minimize(cost, all_prev_ws, bounds = bnds, options={'ftol' : myfactr * np.finfo(float).eps})
 
     return w
