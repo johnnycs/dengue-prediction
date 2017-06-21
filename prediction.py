@@ -1,5 +1,7 @@
 import numpy as np
-import model
+import model_01
+
+print "production of summation of dengue with season and weather"
 
 def get_predictions(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, real, ws, province = "", nweeks_to_predict=[1,2,4,8,16]):
 
@@ -14,7 +16,7 @@ def get_predictions(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, real, ws, province = "",
 #             print case_week_to_predict + i
 #             print case_week_to_predict
 #             mean_temp = real.meantemp[]
-            cur_prediction = model.guess(
+            cur_prediction = model_01.guess(
                 ws,
                 week_to_predict,
                 prev_cases,

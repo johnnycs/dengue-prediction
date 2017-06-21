@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import fmin, minimize
 import weather_costs, ws_from_csv
 
-print 'getting bounded alphas ...'
+print 'getting bounded alphas with params for rain...'
 
 # train comes in the form of dataframe
 def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, train, ws_csv = [], week_forward = 16):
