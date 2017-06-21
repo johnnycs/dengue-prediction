@@ -1,7 +1,9 @@
 import numpy as np
 import model_01
 
-print "product and summation of cases with season and weather"
+
+print "production of summation of dengue with season and weather"
+
 
 def get_predictions(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, real, ws, province = "", nweeks_to_predict=[1,2,4,8,16]):
 
