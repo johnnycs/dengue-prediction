@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.optimize import fmin, minimize
 import weather_all_costs, ws_from_csv
-import weather_humidity_costs, ws_from_csv
 
 print 'getting bounded alphas with params for avgrh...'
 
@@ -28,11 +27,7 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, AVGRH_WEEKS, train, ws_csv = 
             avgrh_for_prediction = train.avgrh[start_week:end_avgrh_week]
             # print rains_for_prediction
 
-<<<<<<< HEAD
             cur_penalty = weather_all_costs.nweek_ahead_cost(
-=======
-            cur_penalty = weather_humidity_costs.nweek_ahead_cost(
->>>>>>> 9bdfd456ec76066eee446043053a63493561656d
                 w,
                 week_forward,
                 start_week,
@@ -86,7 +81,3 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, AVGRH_WEEKS, train, ws_csv = 
     return w
 
 print "done getting alphas ..."
-<<<<<<< HEAD
-=======
-
->>>>>>> 9bdfd456ec76066eee446043053a63493561656d
