@@ -1,10 +1,6 @@
 import numpy as np
 from scipy.optimize import fmin, minimize
-<<<<<<< HEAD
-import weather_all_costs, ws_from_csv
-=======
 import weather_humidity_costs, ws_from_csv
->>>>>>> 9bdfd456ec76066eee446043053a63493561656d
 
 print 'getting bounded alphas with params for avgrh...'
 
@@ -31,11 +27,7 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, AVGRH_WEEKS, train, ws_csv = 
             avgrh_for_prediction = train.avgrh[start_week:end_avgrh_week]
             # print rains_for_prediction
 
-<<<<<<< HEAD
-            cur_penalty = weather_all_costs.nweek_ahead_cost(
-=======
             cur_penalty = weather_humidity_costs.nweek_ahead_cost(
->>>>>>> 9bdfd456ec76066eee446043053a63493561656d
                 w,
                 week_forward,
                 start_week,
@@ -83,13 +75,19 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, AVGRH_WEEKS, train, ws_csv = 
 
     elif len(ws_csv) > 1:
         print 'ws_csv'
-
-    w = minimize(cost, ws_csv, bounds = bnds, options={'ftol' : myfactr * np.finfo(float).eps})
+        # take the csv of ws that has been computed to use
+        prev_ws = ws_from_csv.ws_helper(W_CASE+W_SEASON+W_TEMP+W_RAIN, ws_csv)
+        # print 'prev_ws', len(prev_ws)
+        # prev_ws_season = np.append(prev_ws,seasonality_starters)
+        # print 'prev_ws_season', len(prev_ws_season)
+        # temp_params = ws_csv[W_CASE+W_SEASON:W_CASE+W_SEASON+TEMPERATURE_WEEKS]
+        # prev_ws_temp = np.append(prev_ws_season,temp_params)
+        print 'prev_ws',len(prev_ws)
+        all_prev_ws = np.append(prev_ws,avgrh_starters)
+        print 'all_prev_ws',len(all_prev_ws)
+	w = minimize(cost, all_prev_ws, bounds = bnds, options={'ftol' : myfactr * np.finfo(float).eps})
 
     return w
 
 print "done getting alphas ..."
-<<<<<<< HEAD
-=======
 
->>>>>>> 9bdfd456ec76066eee446043053a63493561656d
