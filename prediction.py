@@ -1,25 +1,29 @@
 import numpy as np
-import model_02
+import model_01
 
-print "prediction for humidity"
 
-def get_predictions(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, AVRGH_WEEKS, real, ws, province = "", nweeks_to_predict=[1,2,4,8,16]):
+print "production of summation of dengue with season and weather"
 
-    def n_week_ahead(cases_for_prediction, temps_for_prediction,
-                     rains_for_prediction, avgrh_for_prediction,
+
+def get_predictions(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, real, ws, province = "", nweeks_to_predict=[1,2,4,8,16]):
+
+    def n_week_ahead(cases_for_prediction, temps_for_prediction, rains_for_prediction,
                      weeks_ahead, case_week_to_predict):
 
         cur_prediction = 0
         prev_cases = np.array(cases_for_prediction.cases)
         for i in range(weeks_ahead):
             week_to_predict = case_week_to_predict + i
-            cur_prediction = model_02.guess(
+#             print week_to_predict
+#             print case_week_to_predict + i
+#             print case_week_to_predict
+#             mean_temp = real.meantemp[]
+            cur_prediction = model_01.guess(
                 ws,
                 week_to_predict,
                 prev_cases,
                 temps_for_prediction,
-                rains_for_prediction,
-                avgrh_for_prediction)
+                rains_for_prediction)
             prev_cases = np.append(prev_cases[1:],cur_prediction) # deduct the first elm out
         return cur_prediction
 
@@ -36,17 +40,12 @@ def get_predictions(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, AVRGH_WEEKS, real, ws, p
             rain_week_to_predict = start_week+RAIN_WEEKS
             rains_for_prediction = real.meantemp[start_week:rain_week_to_predict]
 
-            avgrh_week_to_predict = start_week+AVRGH_WEEKS
-            avgrh_for_prediction = real.avgrh[start_week:avgrh_week_to_predict]
-
             prediction = n_week_ahead(
                 cases_for_prediction,
                 temps_for_prediction,
                 rains_for_prediction,
-                avgrh_for_prediction,
                 nweek,
                 case_week_to_predict)
             predictions.append(prediction)
         all_predictions.append(predictions)
     return all_predictions
-

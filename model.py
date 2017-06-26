@@ -1,15 +1,15 @@
 import numpy as np
 
-print "running model_02"
+print "running model"
 
-def guess(all_ws, nth_week, cases_for_prediction, temps_for_prediction, rains_for_prediction, avgrh_for_prediction):
+def guess(all_ws, nth_week, cases_for_prediction, temps_for_prediction, rains_for_prediction):
 
     Y_INT = 1
     n_omega = len(cases_for_prediction) + Y_INT# lag + 1
     n_season = 2
                                     # 9 weeks temp + 1, 6 weeks rain + 1
     n_temp, n_rain = len(temps_for_prediction) + Y_INT, len(rains_for_prediction) + Y_INT
-    n_avgrh = len(avgrh_for_prediction) + Y_INT
+    # n_humid =
 
     def omega(w_omega, cases_for_prediction):
         pad_y = np.concatenate(([1], np.array(cases_for_prediction)))
@@ -44,12 +44,8 @@ def guess(all_ws, nth_week, cases_for_prediction, temps_for_prediction, rains_fo
         all_rains = np.dot(positive_weights,pad_y)
         return all_rains
 
-    def avgrh_term(w_avgrh, avgrh_for_prediction):
-        pad_y = np.concatenate(([1], np.array(avgrh_for_prediction)))
-        weights = np.array(w_avgrh)
-        positive_weights = weights**2
-        all_avgrh = np.dot(positive_weights,pad_y)
-        return all_avgrh
+    def humidity_term(w, humidity):
+        return
 
     w_omega = all_ws[:n_omega]
     # print "omega",w_omega
@@ -63,13 +59,9 @@ def guess(all_ws, nth_week, cases_for_prediction, temps_for_prediction, rains_fo
     # print "temps_for_prediction",temps_for_prediction
     temperature_part = temperature_term(w_temp, temps_for_prediction) # takes the third part of w
 
-    w_rain = all_ws[n_omega+n_season+n_temp:n_omega+n_season+n_temp+n_rain] # takes the fourth part of w
+    w_rain = all_ws[n_omega+n_season+n_temp:] # takes the fourth part of w
     # print "model",len(w_rain)
     rain_part = rain_term(w_rain, rains_for_prediction)
-    # avgrh_part = avgrh_term(w, avgrh)
+    # humidity_part = humidity_term(w, humidity)
 
-    w_avgrh = all_ws[n_omega+n_season+n_temp+n_rain:]
-    avgrh_part = avgrh_term(w_avgrh, avgrh_for_prediction)
-
-    return (omega * (seasonality_part + temperature_part + rain_part + avgrh_part))
-
+    return (omega * seasonality_part) + (temperature_part * rain_part)
