@@ -1,10 +1,7 @@
 import numpy as np
 from scipy.optimize import fmin, minimize
-<<<<<<< HEAD
 import weather_all_costs, ws_from_csv
-=======
 import weather_humidity_costs, ws_from_csv
->>>>>>> 9bdfd456ec76066eee446043053a63493561656d
 
 print 'getting bounded alphas with params for avgrh...'
 
