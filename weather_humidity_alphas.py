@@ -1,21 +1,22 @@
 import numpy as np
 from scipy.optimize import fmin, minimize
-import weather_costs, ws_from_csv
+import weather_humidity_costs, ws_from_csv
 
 print 'getting bounded alphas ...'
 
 # train comes in the form of dataframe
-def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, train, ws_csv = [], week_forward = 16):
+def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, HUMID_WEEKS, train, ws_csv = [], week_forward = 16):
     W_CASE = LAG + 1
     # W_SEASON = 2
     W_TEMP = TEMPERATURE_WEEKS + 1
     W_RAIN = RAIN_WEEKS + 1
-    W_WEATHER = W_TEMP + W_RAIN
+    W_HMID = HUMID_WEEKS + 1
+    W_WEATHER = W_TEMP + W_RAIN + W_HMID
     # BETAS_SET = W_TEMP + W_CASE + W_SEASON # addition of ALL_WS betas
 
     # use poison instead of least square
     def cost(w):
-        start_week, end_cases_week, end_temp_week, end_rain_week = 0, LAG, TEMPERATURE_WEEKS, RAIN_WEEKS
+        start_week, end_cases_week, end_temp_week, end_rain_week, end_hmid_week = 0, LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, HUMID_WEEKS
         predicted_line_offset = week_forward + end_cases_week - 1 # 41
 
         all_penalties = []
@@ -23,6 +24,7 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, train, ws_csv = [], week_forw
             cases_for_prediction = train.cases[start_week:end_cases_week]
             temps_for_prediction = train.meantemp[start_week:end_temp_week]
             rains_for_prediction = train.rain[start_week:end_rain_week]
+            hmids_for_prediction = train.avgrh[(end_hmid_week - HUMID_WEEKS):end_hmid_week]
             # print rains_for_prediction
 
             cur_penalty = weather_costs.nweek_ahead_cost(
@@ -33,13 +35,15 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, train, ws_csv = [], week_forw
                 train,
                 cases_for_prediction,
                 temps_for_prediction,
-                rains_for_prediction)
+                rains_for_prediction,
+                hmids_for_prediction)
 
             all_penalties.append(cur_penalty)
             start_week+=1
             end_cases_week+=1
             end_temp_week+=1
             end_rain_week+=1
+            end_hmid_week+=1
 
         return np.sum(all_penalties) / float(len(all_penalties))
 
@@ -48,10 +52,12 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, train, ws_csv = [], week_forw
     seasonality_starters = [0.75,20] # [constant,phase]
     temperature_starters = [0.]*(W_TEMP)
     rain_starters = [0.05]*(W_RAIN) # don't start at 0 for rain
+    humid_starters = [1.]*(W_HMID)
 
     arr = np.append(head_arr, seasonality_starters) #  lag + 1 + 2 betas
     temp_arr = np.append(arr, temperature_starters) # lag + 1 + 2 + 10 betas
-    all_arr = np.append(temp_arr, rain_starters) # lag + 1 + 2 + 10 + 7 betas
+    rain_arr = np.append(temp_arr, rain_starters) # lag + 1 + 2 + 10 + 7 betas
+    all_arr = np.append(rain_arr, humid_starters) # lag + 1 + 2 + 10 + 7 + humid_starters betas
     print len(all_arr)
 
     bnds = [(0.,None)]*W_CASE
@@ -72,7 +78,8 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, train, ws_csv = [], week_forw
         prev_ws = ws_from_csv.ws_helper(LAG+1, ws_csv)
         prev_ws_season = np.append(prev_ws, seasonality_starters)
         prev_ws_temp = np.append(prev_ws_season, temperature_starters)
-        all_prev_ws = np.append(prev_ws_temp, rain_starters)
+        prev_ws_rain = np.append(prev_ws_temp, rain_starters)
+        all_prev_ws = np.append(prev_ws_rain, humid_starters)
         print 'prev_ws',len(all_prev_ws)
         w = minimize(cost, all_prev_ws, bounds = bnds, options={'ftol' : myfactr * np.finfo(float).eps})
 

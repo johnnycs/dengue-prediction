@@ -1,4 +1,4 @@
-import model
+import model_01
 import numpy as np
 
 print "getting cost from nweek ahead"
@@ -11,7 +11,8 @@ def nweek_ahead_cost(
         data,
         cases_for_prediction,
         temps_for_prediction,
-        rains_for_prediction):
+        rains_for_prediction,
+        hmids_for_prediction):
 
 #   print end_cases_week
     ret = 0
@@ -23,12 +24,13 @@ def nweek_ahead_cost(
 #         print cases_for_prediction
 #         print "real",real_case
 #         print len(cases_for_prediction), week_to_predict
-        predicted_case = model.guess(
+        predicted_case = model_01.guess(
           ws,
           week_to_predict,
           cases_for_prediction,
           temps_for_prediction,
-          rains_for_prediction)
+          rains_for_prediction,
+          hmids_for_prediction)
 
         cases_for_prediction = np.append(cases_for_prediction[1:],predicted_case)
         sigma_sq = real_case + 1

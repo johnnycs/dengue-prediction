@@ -2,14 +2,20 @@ import numpy as np
 
 print "running model"
 
-def guess(all_ws, nth_week, cases_for_prediction, temps_for_prediction, rains_for_prediction):
+def guess(all_ws, nth_week,
+          cases_for_prediction,
+          temps_for_prediction,
+          rains_for_prediction,
+          hmids_for_prediction):
 
     Y_INT = 1
     n_omega = len(cases_for_prediction) + Y_INT# lag + 1
     n_season = 2
-                                    # 9 weeks temp + 1, 6 weeks rain + 1
-    n_temp, n_rain = len(temps_for_prediction) + Y_INT, len(rains_for_prediction) + Y_INT
-    # n_humid =
+
+    # 9 weeks temp + 1, 6 weeks rain + 1
+    n_temp = len(temps_for_prediction) + Y_INT
+    n_rain = len(rains_for_prediction) + Y_INT
+    n_hmid = len(hmids_for_prediction) + Y_INT
 
     def omega(w_omega, cases_for_prediction):
         pad_y = np.concatenate(([1], np.array(cases_for_prediction)))
@@ -44,6 +50,12 @@ def guess(all_ws, nth_week, cases_for_prediction, temps_for_prediction, rains_fo
         all_rains = np.dot(positive_weights,pad_y)
         return all_rains
 
+    def humidity_term(w_hmid, hmids_for_prediction):
+        pad_y = np.concatenate(([1], np.array(hmids_for_prediction)))
+        weights = np.array(w_hmid)
+        positive_weights = weights**2
+        all_hmid = np.dot(positive_weights,pad_y)
+        return all_hmid
 
     w_omega = all_ws[:n_omega]
     # print "omega",w_omega
@@ -57,9 +69,12 @@ def guess(all_ws, nth_week, cases_for_prediction, temps_for_prediction, rains_fo
     # print "temps_for_prediction",temps_for_prediction
     temperature_part = temperature_term(w_temp, temps_for_prediction) # takes the third part of w
 
-    w_rain = all_ws[n_omega+n_season+n_temp:] # takes the fourth part of w
+    w_rain = all_ws[n_omega+n_season+n_temp:n_omega+n_season+n_temp+n_rain] # takes the fourth part of w
     # print "model",len(w_rain)
     rain_part = rain_term(w_rain, rains_for_prediction)
-    # humidity_part = humidity_term(w, humidity)
 
+    w_hmid = all_ws[n_omega+n_season+n_temp+n_rain:]
+    humidity_part = humidity_term(w_hmid, hmids_for_prediction)
+
+        # AR * (S + (T*R)) => AR*S + (T * R * H)
     return (omega * seasonality_part) + (temperature_part * rain_part)
