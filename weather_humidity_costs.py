@@ -1,7 +1,7 @@
 import model_02
 import numpy as np
 
-print "getting cost from nweek ahead"
+print "getting cost from nweek ahead: humidity"
 
 def nweek_ahead_cost(
         ws,
