@@ -34,4 +34,3 @@ def nweek_ahead_cost(
         ret += ((real_case - predicted_case)**2)/float(sigma_sq)
 
     return ret
-
