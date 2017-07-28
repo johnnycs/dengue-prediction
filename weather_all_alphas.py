@@ -25,7 +25,6 @@ def get_alphas(LAG, TEMPERATURE_WEEKS, RAIN_WEEKS, AVGRH_WEEKS, train, ws_csv = 
             temps_for_prediction = train.meantemp[start_week:end_temp_week]
             rains_for_prediction = train.rain[start_week:end_rain_week]
             avgrh_for_prediction = train.avgrh[start_week:end_avgrh_week]
-            # print rains_for_prediction
 
             cur_penalty = weather_all_costs.nweek_ahead_cost(
                 w,
